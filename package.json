@@ -1,0 +1,16 @@
+{
+
+  "name": "dualcorebrain",
+
+  "type": "commonjs",
+
+  "dependencies": {
+
+    "vexflow": "^3.0.9",
+
+    "webmidi": "^3.0.15"
+
+  }
+
+}
+
