@@ -77,7 +77,6 @@ document.getElementById('add-note').addEventListener('click', (e) => {
     note = notes.shift(); // pluck the left-most undrawn note. Removes the first element from the original array and returns the removed element
     if(!note) return; // If there are no more notes left in the array
 
-
     const group = context.openGroup(); // create an SVG group element
     visibleNoteGroups.push(group); // add that element to our visibleNoteGroups array
     note.draw(); // draw the note
@@ -103,11 +102,29 @@ document.getElementById('add-note').addEventListener('click', (e) => {
       group.classList.add('too-slow');
       visibleNoteGroups.shift();
     }, 5000);
+
+   // noteChecker(note, null);
   });
 
 
 
-  
+
+
+
+/*
+
+function noteChecker(noteArray){
+  console.log(noteArray);
+  if(note.keys[0] == "c#/4" && getMIDIMessage.data[1] == 60){
+    
+  }
+}
+
+*/
+
+
+
+
   document.getElementById('right-answer').addEventListener('click', (e) => {
 
 
@@ -219,17 +236,62 @@ navigator.requestMIDIAccess()
   
   
       function getMIDIMessage(message) {
+        let allMIDIInfo = message;
         var command = message.data[0];
         var note = message.data[1];
         var velocity = (message.data.length > 2) ? message.data[2] : 0; // a velocity value might not be included with a noteOff command
     
         if(message.data[0] == 248 || message.data[0] == 254 || message.data[2] == 0){
           
+
+          document.getElementById('right-answer').addEventListener('click', (e) => {
+
+
+            group = visibleNoteGroups.shift();
+            group.classList.add('correct'); // this starts the note fading-out.
+          
+            // The note will be somewhere in the middle of its move to the left -- by
+            // getting its computed style we find its x-position, freeze it there, and
+            // then send it straight up to note heaven with no horizontal motion.
+            const transformMatrix = window.getComputedStyle(group).transform;
+            
+            // transformMatrix will be something like 'matrix(1, 0, 0, 1, -118, 0)'
+            // where, since we're only translating in x, the 5th property will be
+            // the current x-translation. You can dive into the gory details of
+            // CSS3 transform matrices (along with matrix multiplication) if you want
+            // at http://www.useragentman.com/blog/2011/01/07/css3-matrix-transform-for-the-mathematically-challenged/
+            const x = transformMatrix.split(',')[4].trim();
+          
+            // And, finally, we set the note's style.transform property to send it skyward.
+            group.style.transform = `translate(${x}px, -800px)`;
+          });
+
+
         }
         else{
           console.log(message);
 
+          group = visibleNoteGroups.shift();
+          group.classList.add('correct'); // this starts the note fading-out.
+        
+          // The note will be somewhere in the middle of its move to the left -- by
+          // getting its computed style we find its x-position, freeze it there, and
+          // then send it straight up to note heaven with no horizontal motion.
+          const transformMatrix = window.getComputedStyle(group).transform;
+          
+          // transformMatrix will be something like 'matrix(1, 0, 0, 1, -118, 0)'
+          // where, since we're only translating in x, the 5th property will be
+          // the current x-translation. You can dive into the gory details of
+          // CSS3 transform matrices (along with matrix multiplication) if you want
+          // at http://www.useragentman.com/blog/2011/01/07/css3-matrix-transform-for-the-mathematically-challenged/
+          const x = transformMatrix.split(',')[4].trim();
+        
+          // And, finally, we set the note's style.transform property to send it skyward.
+          group.style.transform = `translate(${x}px, -800px)`;
+
         }
+
+        return allMIDIInfo;
     }
     
   
@@ -237,3 +299,4 @@ navigator.requestMIDIAccess()
 function onMIDIFailure() {
     console.log('Could not access your MIDI devices.');
 }
+
